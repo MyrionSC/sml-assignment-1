@@ -41,7 +41,8 @@ def main ():
 
     ### Test Model
     # test_data = range(0,2000)
-    test_data = [] ## format: ((id, src, dest), label)
+    test_data = [] ## format: (id, src, dest)
+    labeled_test_data = [] ## format: ((id, src, dest), label)
     with open("data/generated-test-data.test", "r") as file:
         buffer = file.readlines()
         # first 1000 lines are real edges, next 1000 are fakes
@@ -49,14 +50,12 @@ def main ():
         fake = buffer[int(len(buffer) / 2) + 1:]
         for edge in real:
             id, src, dest = edge.split("\t")
-            test_data.append(((int(id), int(src), int(dest)), 1))
+            test_data.append((int(id), int(src), int(dest)))
+            labeled_test_data.append(((int(id), int(src), int(dest)), 1))
         for edge in fake:
             id, src, dest = edge.split("\t")
-            test_data.append(((int(id), int(src), int(dest)), 0))
-
-    print(len(test_data))
-    print(test_data[999])
-    print(test_data[1000])
+            test_data.append((int(id), int(src), int(dest)))
+            labeled_test_data.append(((int(id), int(src), int(dest)), 0))
 
     predictions = my_model.predict(test_data)
 
