@@ -9,8 +9,8 @@ import models
 
 def main ():
     ### Inits
-    vertex_set = set()
-    sink_dict = {}
+    # vertex_set = set()
+    # sink_dict = {}
 
     ### load training data
     # with open("./data/train.txt") as trainfile:
@@ -31,28 +31,63 @@ def main ():
     my_model.train(training_data)
 
 
-    test_data = range(0,2000)
+
+
+
+
+
+
+
+
     ### Test Model
+    # test_data = range(0,2000)
+    test_data = [] ## format: ((id, src, dest), label)
+    with open("data/generated-test-data.test", "r") as file:
+        buffer = file.readlines()
+        # first 1000 lines are real edges, next 1000 are fakes
+        real = buffer[1:int(len(buffer) / 2) + 1] # discard first line with headers
+        fake = buffer[int(len(buffer) / 2) + 1:]
+        for edge in real:
+            id, src, dest = edge.split("\t")
+            test_data.append(((int(id), int(src), int(dest)), 1))
+        for edge in fake:
+            id, src, dest = edge.split("\t")
+            test_data.append(((int(id), int(src), int(dest)), 0))
+
+    print(len(test_data))
+    print(test_data[999])
+    print(test_data[1000])
+
     predictions = my_model.predict(test_data)
+
+
+
+    ### Evaluate Model
+    ## todo: read up on AUC and recreate it here
+
+
 
 
     ### Save predictions to file
     ### prediction is a list of values
-    def write_file (predictions):
-        filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".csv"
-        os.makedirs("output", exist_ok=True)
+    # write_file(predictions)
 
-        with open("output/" + filename, "w") as file:
-            file.write("Id,Prediction")
-            for i in range(0, len(predictions)):
-                # save random predictions as baseline. Should be about 50% correct
-                file.write("\n" + str(i + 1) + "," + predictions[i])
-                print("output written to file: output/" + filename)
 
-    write_file(predictions)          
-  
-    
-   
+
+
+
+
+def write_file (predictions):
+    filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".csv"
+    os.makedirs("output", exist_ok=True)
+
+    with open("output/" + filename, "w") as file:
+        file.write("Id,Prediction")
+        for i in range(0, len(predictions)):
+            # save random predictions as baseline. Should be about 50% correct
+            file.write("\n" + str(i + 1) + "," + predictions[i])
+            print("output written to file: output/" + filename)
+
 
 if __name__ == '__main__':
     main()
