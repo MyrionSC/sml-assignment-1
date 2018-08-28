@@ -1,9 +1,8 @@
 class model:
 
-    def train(self):
+    def train(self, train_data):
         #do something with self.train_data and return the model
-        model = None
-        return model
+        self.model = None
 
     def predict(self,test_data):
         self.test_data = test_data
@@ -14,7 +13,7 @@ from random import random
 class random_model(model):
 
     def train(self,train_data):
-        return model.train(train_data)
+        self.model = None
 
     def predict(self, test_data):
         result = []
