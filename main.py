@@ -33,20 +33,26 @@ def main ():
 
     test_data = range(0,2000)
     ### Test Model
-    print(my_model.predict(test_data))
+    predictions = my_model.predict(test_data)
 
 
     ### Save predictions to file
-    filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".csv"
-    os.makedirs("output", exist_ok=True)
+    ### prediction is a list of values
+    def write_file (predictions):
+        filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".csv"
+        os.makedirs("output", exist_ok=True)
 
-    with open("output/" + filename, "w") as file:
-        file.write("Id,Prediction")
-        for i in range(0, 2000):
-            # save random predictions as baseline. Should be about 50% correct
-            file.write("\n" + str(i + 1) + "," + str(random()))
-    print("output written to file: output/" + filename)
+        with open("output/" + filename, "w") as file:
+            file.write("Id,Prediction")
+            for i in range(0, len(predictions)):
+                # save random predictions as baseline. Should be about 50% correct
+                file.write("\n" + str(i + 1) + "," + predictions[i])
+                print("output written to file: output/" + filename)
 
+    write_file(predictions)          
+  
+    
+   
 
 if __name__ == '__main__':
     main()
