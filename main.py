@@ -5,6 +5,7 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import os
 from random import random
 from datetime import datetime
+import models
 
 def main ():
     ### Inits
@@ -24,14 +25,15 @@ def main ():
     #         if i % 1000 == 0:
     #             print(i)
 
-
+    training_data = []
     ### Train Model
+    my_model = models.random_model()
+    my_model.train(training_data)
 
 
-
-
+    test_data = range(0,2000)
     ### Test Model
-
+    print(my_model.predict(test_data))
 
 
     ### Save predictions to file
