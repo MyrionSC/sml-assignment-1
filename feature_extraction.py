@@ -14,3 +14,6 @@ Different Features Extractions Methods
         mutal friend = 2
         edge over two friends = 2 e.g. A->B->C-D then A->D 2
 '''
+
+def get_followers(data):
+    pass

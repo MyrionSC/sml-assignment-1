@@ -20,4 +20,3 @@ class random_model(model):
         for i in range(0,len(test_data)):
             result.append(random())
         return result
-0

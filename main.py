@@ -1,11 +1,10 @@
 #!/usr/bin/python3
+import models
+import helper
 
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-import os
-from random import random
-from datetime import datetime
-import models
+import sklearn.metrics
 
 def main ():
     ### Inits
@@ -26,66 +25,21 @@ def main ():
     #             print(i)
 
     training_data = []
+    
     ### Train Model
     my_model = models.random_model()
     my_model.train(training_data)
 
-
-
-
-
-
-
-
-
-
     ### Test Model
-    # test_data = range(0,2000)
-    test_data = [] ## format: (id, src, dest)
-    labeled_test_data = [] ## format: ((id, src, dest), label)
-    with open("data/generated-test-data.test", "r") as file:
-        buffer = file.readlines()
-        # first 1000 lines are real edges, next 1000 are fakes
-        real = buffer[1:int(len(buffer) / 2) + 1] # discard first line with headers
-        fake = buffer[int(len(buffer) / 2) + 1:]
-        for edge in real:
-            id, src, dest = edge.split("\t")
-            test_data.append((int(id), int(src), int(dest)))
-            labeled_test_data.append(((int(id), int(src), int(dest)), 1))
-        for edge in fake:
-            id, src, dest = edge.split("\t")
-            test_data.append((int(id), int(src), int(dest)))
-            labeled_test_data.append(((int(id), int(src), int(dest)), 0))
-
+    filename = "data/generated-test-data.test"
+    test_data =pd.read_csv(filename, sep='\t', lineterminator='\r', index_col= "Id")
+    test_data.loc[:1000,"Label"] = True
+    test_data.loc[1000:,"Label"] = False
+        
+    ### Evaluate Model 
     predictions = my_model.predict(test_data)
-
-
-
-    ### Evaluate Model
-    ## todo: read up on AUC and recreate it here
-
-
-
-
-    ### Save predictions to file
-    ### prediction is a list of values
-    # write_file(predictions)
-
-
-
-
-
-
-def write_file (predictions):
-    filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".csv"
-    os.makedirs("output", exist_ok=True)
-
-    with open("output/" + filename, "w") as file:
-        file.write("Id,Prediction")
-        for i in range(0, len(predictions)):
-            # save random predictions as baseline. Should be about 50% correct
-            file.write("\n" + str(i + 1) + "," + predictions[i])
-            print("output written to file: output/" + filename)
+    auc = sklearn.metrics.roc_auc_score(test_data["Label"],predictions)
+    print("AUC:", auc)
 
 
 if __name__ == '__main__':
