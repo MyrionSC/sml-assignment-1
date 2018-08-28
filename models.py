@@ -1,7 +1,7 @@
 class model:
 
     def train(self, train_data):
-        #do something with self.train_data and return the model
+        #do something with self.train_data 
         self.model = None
 
     def predict(self,test_data):
@@ -20,3 +20,4 @@ class random_model(model):
         for i in range(0,len(test_data)):
             result.append(random())
         return result
+0
