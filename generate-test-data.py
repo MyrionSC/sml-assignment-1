@@ -1,6 +1,7 @@
 from random import random
 import math
-TEST_SIZE = 1000
+TEST_SIZE = 2000
+TEST_SIZE_HALF = int(TEST_SIZE / 2)
 VERTEX_MAX = 5000000 # observed from test-public.txt that this is about how large edges get
 
 ####         Split in training and test      ####
@@ -19,28 +20,32 @@ def main():
         buffer = train.readlines()
 
     ### extract 1000 real edges from train.txt
-    for i in range(0, TEST_SIZE):
+    for i in range(0, TEST_SIZE_HALF):
         randomVertex = math.floor(random() * len(buffer))
         edgesFromVertex = buffer[randomVertex].split("\t")
         randomEdge = edgesFromVertex[math.floor(random() * len(edgesFromVertex))]
         realEdges.append((randomVertex, int(randomEdge)))
 
     ### generate 1000 random edges and test that they are not accidentally real
-    for i in range(0, 1000):
+    for i in range(0, TEST_SIZE_HALF):
         fakeEdges.append(createFakeEdge(buffer))
 
-    ### merge the real and fake edges randomly
-
-
-
+    ### merge the real and fake edges
+    ### todo: not sure if it should be random or not
+    edges = realEdges + fakeEdges
 
     ### save to file
+    fileName = "generated-test-data.test"
+    with open("data/" + fileName, "w+") as file:
+        file.write("Id\tSource\tSink")
+        for i, edge in enumerate(edges):
+            file.write("\n" + str(i+1) + "\t" + str(edge[0]) + "\t" + str(edge[1]))
 
 
 
 
 def createFakeEdge(buffer):
-    fakeEdge = (math.floor(random()*VERTEX_MAX), math.floor(random()*VERTEX_MAX))
+    fakeEdge = (math.floor(random()*len(buffer)), math.floor(random()*VERTEX_MAX))
 
     #test if edge is accidentally real
     if fakeEdge[0] < len(buffer):
@@ -48,6 +53,7 @@ def createFakeEdge(buffer):
         for e in vertexEdges:
             if int(e) == fakeEdge[1]:
                 # a real edge was accidentally created, so we try again
+                print("real edge hit") # this pretty much never happens
                 return createFakeEdge(buffer)
 
     # edge is not real
