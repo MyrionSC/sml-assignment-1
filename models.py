@@ -24,4 +24,9 @@ class random_model(model):
 class friends_model(model):
 
     def train(self,train_data):
-        pass
+        self.friends = train_data
+
+    def predict(self,train_data):
+        forecast = train_data.apply(lambda x: x in self.friends.index) #return 1 if vertex in train data set
+        return forecast
+        

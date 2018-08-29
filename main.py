@@ -21,8 +21,11 @@ def main ():
     print("features written to file ")
 
     ### Train Model
-    my_model = models.random_model()
-    my_model.train(training_data)
+    model_f = models.friends_model()
+    model_r = models.random_model()
+    model_f.train(numbers)
+    model_r.train(numbers)
+
 
     ### Test Model
     filename = "data/generated-test-data.test"
@@ -31,9 +34,15 @@ def main ():
     test_data.loc[1000:,"Label"] = False
         
     ### Evaluate Model 
-    predictions = my_model.predict(test_data)
+    #friends model
+    predictions = model_f.predict(test_data["Source"])
     auc = sklearn.metrics.roc_auc_score(test_data["Label"],predictions)
-    print("AUC:", auc)
+    print("AUC friends: ", auc)
+    
+    #random model
+    predictions = model_r.predict(test_data["Source"])
+    auc = sklearn.metrics.roc_auc_score(test_data["Label"],predictions)
+    print("AUC random: ", auc)
 
 
 if __name__ == '__main__':
