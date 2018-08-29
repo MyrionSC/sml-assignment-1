@@ -14,6 +14,14 @@ Different Features Extractions Methods
         mutal friend = 2
         edge over two friends = 2 e.g. A->B->C-D then A->D 2
 '''
+import pandas as pd
 
-def get_followers(data):
-    pass
+def get_followers(edges):
+    '''
+    edges is a dictionary
+    '''
+    numbers =pd.Series()
+    for key, value in edges.items():
+        numbers.loc[key]=len(value)
+    return numbers
+

@@ -1,31 +1,25 @@
 #!/usr/bin/python3
 import models
 import helper
+import feature_extraction
 
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import sklearn.metrics
 
 def main ():
-    ### Inits
-    # vertex_set = set()
-    # sink_dict = {}
 
-    ### load training data
-    # with open("./data/train.txt") as trainfile:
-    #     for i, line in enumerate(trainfile):
-    #         line_list = [int(k) for k in line[:-1].split("\t")]
-    #         vertex_set.add(line_list[0])
-    #         for s in line_list[1:]:
-    #             if s in sink_dict:
-    #                 sink_dict[s] += 1
-    #             else:
-    #                 sink_dict[s] = 1
-    #         if i % 1000 == 0:
-    #             print(i)
-
-    training_data = []
+    ### Load training data
+    print("data loading...")
+    training_data = helper.read_file("./data/train.txt")
+    print("data loaded")
     
+    #### Extract features
+    numbers = feature_extraction.get_followers(training_data)
+    print("features extracted")
+    numbers.to_csv("data/feature_number.csv")
+    print("features written to file ")
+
     ### Train Model
     my_model = models.random_model()
     my_model.train(training_data)

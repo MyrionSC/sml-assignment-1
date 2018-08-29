@@ -1,6 +1,15 @@
 import os
 from datetime import datetime
 
+def read_file (filename):
+    edges = dict() 
+    with open(filename) as trainfile:
+        for i, line in enumerate(trainfile):
+            line_list = [int(k) for k in line.split("\t")]
+            edges[line_list[0]] = line_list[1:]
+    return edges
+
+
 
     ### Save predictions to file
     ### prediction is a list of values

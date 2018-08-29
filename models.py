@@ -20,3 +20,8 @@ class random_model(model):
         for i in range(0,len(test_data)):
             result.append(random())
         return result
+
+class friends_model(model):
+
+    def train(self,train_data):
+        pass
