@@ -21,17 +21,19 @@ def main():
 
     ### extract 1000 real edges from train.txt
     for i in range(0, TEST_SIZE_HALF):
-        randomVertex = math.floor(random() * len(buffer))
-        edgesFromVertex = buffer[randomVertex].split("\t")
-        randomEdge = edgesFromVertex[math.floor(random() * len(edgesFromVertex))]
-        realEdges.append((randomVertex, int(randomEdge)))
+        randomLine = buffer[math.floor(random() * len(buffer))].split("\t")
+        source = randomLine[0]
+        edge = randomLine[1 + math.floor(random() * len(randomLine) - 1)]
+        realEdges.append((int(source), int(edge)))
+    print("real edges found")
 
     ### generate 1000 random edges and test that they are not accidentally real
     for i in range(0, TEST_SIZE_HALF):
         fakeEdges.append(createFakeEdge(buffer))
+    print("fake edges generated")
 
     ### merge the real and fake edges
-    ### todo: not sure if it should be random or not
+    ### todo: not sure if it should be random or not. For now the first 1000 are real and the second 1000 are fake
     edges = realEdges + fakeEdges
 
     ### save to file
@@ -40,24 +42,21 @@ def main():
         file.write("Id\tSource\tSink")
         for i, edge in enumerate(edges):
             file.write("\n" + str(i+1) + "\t" + str(edge[0]) + "\t" + str(edge[1]))
-
-
+    print("results written to file: data/" + fileName)
 
 
 def createFakeEdge(buffer):
-    fakeEdge = (math.floor(random()*len(buffer)), math.floor(random()*VERTEX_MAX))
-
+    randomLine = buffer[math.floor(random() * len(buffer))].split("\t")
+    source = randomLine[0]
+    fakeDest = math.floor(random() * VERTEX_MAX)
     #test if edge is accidentally real
-    if fakeEdge[0] < len(buffer):
-        vertexEdges = buffer[fakeEdge[0]].split("\t")
-        for e in vertexEdges:
-            if int(e) == fakeEdge[1]:
-                # a real edge was accidentally created, so we try again
-                print("real edge hit") # this pretty much never happens
-                return createFakeEdge(buffer)
+    for edge in randomLine[1:]:
+        if int(edge) == fakeDest:
+            # real edge accidentally hit, try again
+            return createFakeEdge(buffer)
 
     # edge is not real
-    return fakeEdge
+    return (source, fakeDest)
 
 
 if __name__ == '__main__':
