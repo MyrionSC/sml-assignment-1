@@ -29,7 +29,7 @@ def main ():
 
     ### Test Model
     filename = "data/generated-test-data.test"
-    test_data =pd.read_csv(filename, sep='\t', lineterminator='\r', index_col= "Id")
+    test_data =pd.read_csv(filename, sep='\t', lineterminator='\n', index_col= "Id")
     test_data.loc[:1000,"Label"] = True
     test_data.loc[1000:,"Label"] = False
         
