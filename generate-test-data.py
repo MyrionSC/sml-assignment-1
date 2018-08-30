@@ -46,14 +46,14 @@ def main():
 
 
 def createFakeEdge(buffer):
-    randomLine = buffer[math.floor(random() * len(buffer))].split("\t")
-    source = randomLine[0]
+    # randomLine = buffer[math.floor(random() * len(buffer))].split("\t")
+    source = math.floor(random() * VERTEX_MAX)
     fakeDest = math.floor(random() * VERTEX_MAX)
     #test if edge is accidentally real
-    for edge in randomLine[1:]:
-        if int(edge) == fakeDest:
-            # real edge accidentally hit, try again
-            return createFakeEdge(buffer)
+    # for edge in randomLine[1:]:
+    #     if int(edge) == fakeDest:
+    #         # real edge accidentally hit, try again
+    #         return createFakeEdge(buffer)
 
     # edge is not real
     return (source, fakeDest)
