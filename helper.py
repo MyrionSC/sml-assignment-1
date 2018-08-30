@@ -21,7 +21,7 @@ def write_file (predictions):
 
     with open("output/" + filename, "w") as file:
         file.write("Id,Prediction")
+        values = predictions.values.astype(int)
         for i in range(0, len(predictions)):
-            # save random predictions as baseline. Should be about 50% correct
-            file.write("\n" + str(i + 1) + "," + predictions[i])
-            print("output written to file: output/" + filename)
+            file.write("\n" + str(i + 1) + "," + str(values[i]))
+    print("output written to file: output/" + filename)
