@@ -25,3 +25,15 @@ def write_file (predictions):
         for i in range(0, len(predictions)):
             file.write("\n" + str(i + 1) + "," + str(values[i]))
     print("output written to file: output/" + filename)
+
+
+def write_dict_with_lists_to_file (list_dict, filename):
+    os.makedirs("data", exist_ok=True)
+
+    with open("data/" + filename, "w+") as file:
+        for key, value in list_dict.items():
+            file.write(str(key))
+            for item in value:
+                file.write("\t" + str(item))
+            file.write("\n")
+
