@@ -2,12 +2,12 @@ import os
 from datetime import datetime
 
 def read_file (filename):
-    edges = dict() 
+    data_dict = dict()
     with open(filename) as trainfile:
-        for i, line in enumerate(trainfile):
+        for line in trainfile:
             line_list = [int(k) for k in line.split("\t")]
-            edges[line_list[0]] = line_list[1:]
-    return edges
+            data_dict[line_list[0]] = line_list[1:]
+    return data_dict
 
 
 
@@ -15,7 +15,7 @@ def read_file (filename):
     ### prediction is a list of values
     # write_file(predictions)
 
-def write_file (predictions):
+def save_predictions_to_file (predictions):
     filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".csv"
     os.makedirs("output", exist_ok=True)
 
@@ -37,3 +37,14 @@ def write_dict_with_lists_to_file (list_dict, filename):
                 file.write("\t" + str(item))
             file.write("\n")
 
+def extract_following_from_followers(followers_dict):
+    following_dict = dict()
+
+    for source, followers in followers_dict.items():
+        for user in followers:
+            if user in following_dict:
+                following_dict[user].append(source)
+            else:
+                following_dict[user] = [source]
+
+    return following_dict
