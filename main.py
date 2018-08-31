@@ -11,20 +11,23 @@ def main ():
 
     ### Load training data
     print("data loading...")
-    training_data = helper.read_file("./data/train.txt")
+    training_data_dict = helper.read_file("./data/train.txt")
     print("data loaded")
-    
+
     #### Extract features
-    numbers = feature_extraction.get_followers(training_data)
+    print("extracting features...")
+    user_followers_dict = feature_extraction.extract_followers(training_data_dict)
     print("features extracted")
-    numbers.to_csv("data/feature_number.csv")
-    print("features written to file ")
+    # followers_num.to_csv("data/feature_number.csv")
+    # print("features written to file ")
 
     ### Train Model
     model_f = models.friends_model()
     model_r = models.random_model()
-    model_f.train(numbers)
-    model_r.train(numbers)
+    model_f.train(user_followers_dict)
+    model_r.train(None)
+
+
 
 
     ### Test Model
@@ -32,13 +35,13 @@ def main ():
     test_data =pd.read_csv(filename, sep='\t', lineterminator='\n', index_col= "Id")
     test_data.loc[:1000,"Label"] = True
     test_data.loc[1000:,"Label"] = False
-        
-    ### Evaluate Model 
+
+    ### Evaluate Model
     #friends model
     predictions = model_f.predict(test_data["Source"])
     auc = sklearn.metrics.roc_auc_score(test_data["Label"],predictions)
     print("AUC friends: ", auc)
-    
+
     #random model
     predictions = model_r.predict(test_data["Source"])
     auc = sklearn.metrics.roc_auc_score(test_data["Label"],predictions)

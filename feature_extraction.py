@@ -13,15 +13,26 @@ Different Features Extractions Methods
         direct edge = 1
         mutal friend = 2
         edge over two friends = 2 e.g. A->B->C-D then A->D 2
+
+--- Observation: Each Source for edges in test-public is in train.txt, so it is real.
+
+4. friends in common
+    - Hypothesis: For a given edge A -> B, if there exists real edges A -> C and C -> B then
+    A -> B is likely real since you are likely to get to know (and thus follow) a friend of a friend at some point
+    or have interests in common
+
+
 '''
+
+
 import pandas as pd
 
-def get_followers(edges):
+def extract_followers(followers_dict):
     '''
     edges is a dictionary
     '''
-    numbers =pd.Series()
-    for key, value in edges.items():
-        numbers.loc[key]=len(value)
-    return numbers
+    Followers =pd.Series()
+    for key, value in followers_dict.items():
+        Followers.loc[key]=len(value)
+    return Followers
 
