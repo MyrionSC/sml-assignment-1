@@ -24,9 +24,11 @@ def main ():
 
 
     #### Extract features
-    # print("extracting features...")
+    print("extracting features...")
     # user_followers_dict = feature_extraction.extract_followers(training_data_dict)
-    # print("features extracted")
+    mutual_followers_series = feature_extraction.extract_mutual_follows(followers_dict, following_dict)
+    mutual_followers_series.to_csv("data/mutual_followers.csv")
+    print("features extracted")
     # # followers_num.to_csv("data/feature_number.csv")
     # # print("features written to file ")
     #

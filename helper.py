@@ -40,11 +40,11 @@ def write_dict_with_lists_to_file (list_dict, filename):
 def extract_following_from_followers(followers_dict):
     following_dict = dict()
 
-    for source, followers in followers_dict.items():
-        for user in followers:
-            if user in following_dict:
-                following_dict[user].append(source)
+    for user, followers in followers_dict.items():
+        for f in followers:
+            if f in following_dict:
+                following_dict[f].append(user)
             else:
-                following_dict[user] = [source]
+                following_dict[f] = [user]
 
     return following_dict

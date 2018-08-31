@@ -27,14 +27,31 @@ Different Features Extractions Methods
 
 import pandas as pd
 
-def extract_followers(followers_dict):
-    '''
-    edges is a dictionary
-    '''
-    Followers =pd.Series()
+def extract_num_followers(followers_dict):
+    num_followers =pd.Series()
     for key, value in followers_dict.items():
-        Followers.loc[key]=len(value)
-    return Followers
+        num_followers.loc[key]=len(value)
+    return num_followers
+
+
+# if two users follow each other, they both get a 1, otherwise 0
+def extract_mutual_follows(followers_dict, following_dict):
+    ### does it make sense that this is a series?
+    mutual_follows = pd.Series()
+
+    # print(len(followers_dict))
+    # i = 0
+    for user, followers in followers_dict.items():
+        for f in followers:
+            if user in following_dict[f]:
+                mutual_follows.loc[user] = f
+                mutual_follows.loc[f] = user
+                # print("mutual followers found: " + str(len(mutual_follows)))
+        # print(i)
+        # i += 1
+
+    return mutual_follows
+
 
 
 

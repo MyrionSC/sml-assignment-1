@@ -21,6 +21,7 @@ class random_model(model):
             result.append(random())
         return result
 
+
 class friends_model(model):
 
     def train(self,train_data):
@@ -29,4 +30,17 @@ class friends_model(model):
     def predict(self, test_data):
         forecast = test_data.apply(lambda x: x in self.friends.index) #return 1 if vertex in train data set
         return forecast
-        
+
+
+
+class mutual_follows_model(model):
+
+    def train(self,train_data):
+        self.mutual_follows = train_data
+
+    def predict(self, test_data):
+        ### if testdata is
+
+
+        pass
+
