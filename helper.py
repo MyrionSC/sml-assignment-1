@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 
 def read_file (filename):
     data_dict = dict()
@@ -15,15 +16,13 @@ def read_file (filename):
     ### prediction is a list of values
     # write_file(predictions)
 
-def save_predictions_to_file (predictions):
+def save_predictions_to_file (test_features, predictions):
     filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".csv"
     os.makedirs("output", exist_ok=True)
 
-    with open("output/" + filename, "w") as file:
-        file.write("Id,Prediction")
-        values = predictions.values.astype(int)
-        for i in range(0, len(predictions)):
-            file.write("\n" + str(i + 1) + "," + str(values[i]))
+    predictions_df = pd.DataFrame({'Id': test_features.index, 'Prediction': list(map(int, predictions))}).set_index('Id')
+    predictions_df.to_csv('output/' + filename)
+
     print("output written to file: output/" + filename)
 
 
