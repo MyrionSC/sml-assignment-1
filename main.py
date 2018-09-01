@@ -39,6 +39,16 @@ def main ():
 
     ### Extract features
     print("Extracting features...")
+    # train_df["Following_Source"] = train_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], following_dict), axis=1)
+    # train_df["Source_Followers"] = train_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], followers_dict), axis=1)
+    # train_df["Sink_Following"] = train_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
+    # train_df["Sink_Followers"] = train_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], followers_dict), axis=1)
+    #
+    # test_df["Source_Following"] = test_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], following_dict), axis=1)
+    # test_df["Source_Followers"] = test_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], followers_dict), axis=1)
+    # test_df["Sink_Following"] = test_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
+    # test_df["Sink_Followers"] = test_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], followers_dict), axis=1)
+
     train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"],
                                                                                           followers_dict), axis=1)
     test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"],
@@ -57,6 +67,8 @@ def main ():
     ### Train model
     print("Training model...")
     feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers"]
+    # feature_cols = ["Source_Following", "Source_Followers", "Sink_Following", "Sink_Followers",
+    #                 "Reciprocated", "Same_Follows", "Same_Followers"]
     features = train_df.loc[:, feature_cols]
     target = train_df.Label
 

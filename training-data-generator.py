@@ -46,13 +46,13 @@ def main():
 
     ### save to files
     with open("data/" + TRAINING_FILE_NAME, "w+") as file:
-        file.write("Id\tSource\tSink\n")
+        file.write("Id\tSource\tSink")
         for i, edge in enumerate(trainingEdges):
-            file.write(str(i+1).strip() + "\t" + str(edge[0]).strip() + "\t" + str(edge[1]).strip() + "\n")
+            file.write("\n" + str(i+1).strip() + "\t" + str(edge[0]).strip() + "\t" + str(edge[1]).strip())
     with open("data/" + TEST_FILE_NAME, "w+") as file:
-        file.write("Id\tSource\tSink\n")
+        file.write("Id\tSource\tSink")
         for i, edge in enumerate(testEdges):
-            file.write(str(i+1).strip() + "\t" + str(edge[0]).strip() + "\t" + str(edge[1]).strip() + "\n")
+            file.write("\n" + str(i+1).strip() + "\t" + str(edge[0]).strip() + "\t" + str(edge[1]).strip())
 
     print("-")
     print("Training data written to file: data/" + TRAINING_FILE_NAME)
