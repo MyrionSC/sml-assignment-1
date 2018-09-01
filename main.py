@@ -47,6 +47,11 @@ def main ():
     test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"],
                                                                                           following_dict), axis=1)
 
+    train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"],
+                                                                                          followers_dict), axis=1)
+    test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"],
+                                                                                          followers_dict), axis=1)
+
 
 
 
