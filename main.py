@@ -6,6 +6,7 @@ import feature_extraction
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import sklearn.metrics
+from sklearn.linear_model import LogisticRegression
 
 def main ():
 
@@ -16,11 +17,12 @@ def main ():
     test_df = pd.read_csv("data/generated-test-data.test", sep="\t", index_col="Id")
     print("Training and test data loaded")
 
-    ### apply labels to training and test data
+    # apply labels to training and test data
     train_df.loc[:9000, "Label"] = True
     train_df.loc[9000:, "Label"] = False
     test_df.loc[:1000, "Label"] = True
     test_df.loc[1000:, "Label"] = False
+
 
     ### load feature extraction helper data
     print("Feature data loading...")
@@ -33,61 +35,43 @@ def main ():
     print("Feature data loaded")
 
 
-
-    #### Extract features
-    print("extracting features...")
-
+    ### Extract features
+    print("Extracting features...")
     train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"],
                                                                                           followers_dict), axis=1)
     test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"],
                                                                                           followers_dict), axis=1)
-
     train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"],
                                                                                           following_dict), axis=1)
     test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"],
                                                                                           following_dict), axis=1)
-
     train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"],
                                                                                           followers_dict), axis=1)
     test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"],
                                                                                           followers_dict), axis=1)
+    print("Features extracted")
 
 
+    ### Train model
+    print("Training model...")
+    feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers"]
+    features = train_df.loc[:, feature_cols]
+    target = train_df.Label
+
+    # trying logreg for new
+    logreg = LogisticRegression()
+    logreg.fit(features, target)
+    print("Model trained")
 
 
-    print(test_df.head())
+    ### Test model
+    test_features = test_df.loc[:, feature_cols]
+    predictions = logreg.predict(test_features)
 
 
-
-    print("features extracted")
-
-
-
-    # ### Train Model
-    # model_f = models.friends_model()
-    # model_r = models.random_model()
-    # model_f.train(user_followers_dict)
-    # model_r.train(None)
-    #
-    #
-    #
-    #
-    # ### Test Model
-    # filename = "data/generated-test-data.test"
-    # test_data =pd.read_csv(filename, sep='\t', lineterminator='\n', index_col= "Id")
-    # test_data.loc[:1000,"Label"] = True
-    # test_data.loc[1000:,"Label"] = False
-    #
-    # ### Evaluate Model
-    # #friends model
-    # predictions = model_f.predict(test_data["Source"])
-    # auc = sklearn.metrics.roc_auc_score(test_data["Label"],predictions)
-    # print("AUC friends: ", auc)
-    #
-    # #random model
-    # predictions = model_r.predict(test_data["Source"])
-    # auc = sklearn.metrics.roc_auc_score(test_data["Label"],predictions)
-    # print("AUC random: ", auc)
+    ### Evaluate Model
+    auc = sklearn.metrics.roc_auc_score(test_df["Label"],predictions)
+    print("AUC friends: ", auc)
 
 
 if __name__ == '__main__':

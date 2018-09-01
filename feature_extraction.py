@@ -48,8 +48,8 @@ def same_following(src, sink, following_dict):
 def same_followers(src, sink, followers_dict):
     if src in followers_dict and sink in followers_dict:
         same_followers_num = len(set(followers_dict[src]) & set(followers_dict[sink]))
-        if same_followers_num != 0:
-            print(str(src) + " and " + str(sink) + " has follows in common: " + str(set(followers_dict[src]) & set(followers_dict[sink])))
+        # if same_followers_num != 0:
+        #     print(str(src) + " and " + str(sink) + " has follows in common: " + str(set(followers_dict[src]) & set(followers_dict[sink])))
         return same_followers_num
     return 0
 
