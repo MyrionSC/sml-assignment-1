@@ -6,6 +6,7 @@ import feature_extraction
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import sklearn.metrics
+from xgboost import XGBClassifier
 from sklearn.linear_model import LogisticRegression
 
 def main ():
@@ -15,6 +16,7 @@ def main ():
     print("Training and test data loading...")
     train_df = pd.read_csv("data/generated-training-data.test", sep="\t", index_col="Id")
     test_df = pd.read_csv("data/generated-test-data.test", sep="\t", index_col="Id")
+    # test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
     print("Training and test data loaded")
 
     # apply labels to training and test data
@@ -58,20 +60,20 @@ def main ():
     features = train_df.loc[:, feature_cols]
     target = train_df.Label
 
-    # trying logreg for new
-    logreg = LogisticRegression()
-    logreg.fit(features, target)
+    model = XGBClassifier()
+    model.fit(features.values, target.values)
     print("Model trained")
 
 
     ### Test model
     test_features = test_df.loc[:, feature_cols]
-    predictions = logreg.predict(test_features)
+    predictions = model.predict(test_features.values)
 
-
-    ### Evaluate Model
     auc = sklearn.metrics.roc_auc_score(test_df["Label"],predictions)
-    print("AUC friends: ", auc)
+    print("AUC: ", auc)
+
+    # helper.save_predictions_to_file(test_features, predictions)
+
 
 
 if __name__ == '__main__':
