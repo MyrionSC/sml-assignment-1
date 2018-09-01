@@ -37,7 +37,7 @@ def write_dict_with_lists_to_file (list_dict, filename):
                 file.write("\t" + str(item))
             file.write("\n")
 
-def extract_following_from_followers(followers_dict):
+def extract_followers_from_following(followers_dict):
     following_dict = dict()
 
     for user, followers in followers_dict.items():

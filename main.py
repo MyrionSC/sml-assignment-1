@@ -11,27 +11,28 @@ def main ():
 
     ### Load training data
     print("data loading...")
-    followers_dict = helper.read_file("./data/train.txt")
-    following_dict = helper.read_file("./data/following.txt")
+    following_dict = helper.read_file("./data/train.txt")
+    followers_dict = helper.read_file("./data/followers.txt")
     print("data loaded")
 
-    ### todo: to Jonathan: you need to outcomment below and run to generate following file
-    # following_dict = helper.extract_following_from_followers(followers_dict)
-    # helper.write_dict_with_lists_to_file(following_dict, "following.txt")
+    ### todo: to Jonathan: you need to outcomment below and run to generate followers.txt file
+    # followers_dict = helper.extract_followers_from_following(following_dict)
+    # helper.write_dict_with_lists_to_file(followers_dict, "followers.txt")
 
-
+    print(len(following_dict))
+    print(len(followers_dict))
 
 
 
     #### Extract features
     print("extracting features...")
-    # user_followers_dict = feature_extraction.extract_followers(training_data_dict)
-    mutual_followers_series = feature_extraction.extract_mutual_follows(followers_dict, following_dict)
-    mutual_followers_series.to_csv("data/mutual_followers.csv")
+
+
+
     print("features extracted")
-    # # followers_num.to_csv("data/feature_number.csv")
-    # # print("features written to file ")
-    #
+
+
+
     # ### Train Model
     # model_f = models.friends_model()
     # model_r = models.random_model()

@@ -34,23 +34,24 @@ def extract_num_followers(followers_dict):
     return num_followers
 
 
+## this does not really make sense
 # if two users follow each other, they both get a 1, otherwise 0
-def extract_mutual_follows(followers_dict, following_dict):
-    ### does it make sense that this is a series?
-    mutual_follows = pd.Series()
-
-    # print(len(followers_dict))
-    # i = 0
-    for user, followers in followers_dict.items():
-        for f in followers:
-            if user in following_dict[f]:
-                mutual_follows.loc[user] = f
-                mutual_follows.loc[f] = user
-                # print("mutual followers found: " + str(len(mutual_follows)))
-        # print(i)
-        # i += 1
-
-    return mutual_follows
+# def extract_mutual_follows(followers_dict, following_dict):
+#     ### does it make sense that this is a series?
+#     mutual_follows = pd.Series()
+#
+#     # print(len(followers_dict))
+#     # i = 0
+#     for user, followers in followers_dict.items():
+#         for f in followers:
+#             if user in following_dict[f]:
+#                 mutual_follows.loc[user] = f
+#                 mutual_follows.loc[f] = user
+#                 # print("mutual followers found: " + str(len(mutual_follows)))
+#         # print(i)
+#         # i += 1
+#
+#     return mutual_follows
 
 
 
