@@ -9,11 +9,12 @@ import sklearn.metrics
 
 def main ():
 
+
     ### Load training data
-    print("data loading...")
+    print("Training and test data loading...")
     train_df = pd.read_csv("data/generated-training-data.test", sep="\t", index_col="Id")
     test_df = pd.read_csv("data/generated-test-data.test", sep="\t", index_col="Id")
-    print("data loaded")
+    print("Training and test data loaded")
 
     ### apply labels to training and test data
     train_df.loc[:9000, "Label"] = True
@@ -22,17 +23,23 @@ def main ():
     test_df.loc[1000:, "Label"] = False
 
     ### load feature extraction helper data
-    # following_dict = helper.read_file("./data/train.txt")
-    # followers_dict = helper.read_file("./data/followers.txt")
+    print("Feature data loading...")
+    following_dict = helper.read_file("./data/train.txt")
+    followers_dict = helper.read_file("./data/followers.txt")
 
-
-    ### todo: to Jonathan: you need to outcomment below and run to generate followers.txt file
+    ### todo: to Jonathan: you need to outcomment 2 lines below and run to generate followers.txt file
     # followers_dict = helper.extract_followers_from_following(following_dict)
     # helper.write_dict_with_lists_to_file(followers_dict, "followers.txt")
+    print("Feature data loaded")
+
 
 
     #### Extract features
     print("extracting features...")
+
+    train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"],
+                                                                                          followers_dict), axis=1)
+    print(train_df.head())
 
 
 

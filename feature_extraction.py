@@ -27,11 +27,21 @@ Different Features Extractions Methods
 
 import pandas as pd
 
-def extract_num_followers(followers_dict):
+def num_followers(followers_dict):
     num_followers =pd.Series()
     for key, value in followers_dict.items():
         num_followers.loc[key]=len(value)
     return num_followers
+
+def reciprocated_follows(src, sink, followers_dict):
+    if src in followers_dict and sink in followers_dict and src in followers_dict[sink] and sink in followers_dict[src]:
+        # print(str(src) + " and " + str(sink) + " follows each other!")
+        return 1
+    return 0
+
+
+
+
 
 
 ## this does not really make sense
