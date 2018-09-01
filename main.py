@@ -11,17 +11,20 @@ def main ():
 
     ### Load training data
     print("data loading...")
+
+
+    print("data loaded")
+
+
+
+    ### load feature extraction helper data
     following_dict = helper.read_file("./data/train.txt")
     followers_dict = helper.read_file("./data/followers.txt")
-    print("data loaded")
+
 
     ### todo: to Jonathan: you need to outcomment below and run to generate followers.txt file
     # followers_dict = helper.extract_followers_from_following(following_dict)
     # helper.write_dict_with_lists_to_file(followers_dict, "followers.txt")
-
-    print(len(following_dict))
-    print(len(followers_dict))
-
 
 
     #### Extract features

@@ -1,8 +1,10 @@
 from random import random
 import math
-TEST_SIZE = 2000
+
+FILENAME = "generated-training-data.test"
+TEST_SIZE = 20000
 TEST_SIZE_HALF = int(TEST_SIZE / 2)
-VERTEX_MAX = 5000000 # observed from test-public.txt that this is about how large edges get
+VERTEX_MAX = 4867136 # This is the number of nodes in train.txt
 
 ####         Split in training and test      ####
 # 1. Extract 1000 from the real data set
@@ -20,29 +22,32 @@ def main():
         buffer = train.readlines()
 
     ### extract 1000 real edges from train.txt
+    print("Finding real edges...")
     for i in range(0, TEST_SIZE_HALF):
         randomLine = buffer[math.floor(random() * len(buffer))].split("\t")
         source = randomLine[0]
         edge = randomLine[1 + math.floor(random() * len(randomLine) - 1)]
         realEdges.append((int(source), int(edge)))
-    print("real edges found")
+    print("Real edges found")
 
     ### generate 1000 random edges and test that they are not accidentally real
+    print("Generating fake edges...")
     for i in range(0, TEST_SIZE_HALF):
         fakeEdges.append(createFakeEdge(buffer))
-    print("fake edges generated")
+    print("Fake edges generated")
 
     ### merge the real and fake edges
     ### todo: not sure if it should be random or not. For now the first 1000 are real and the second 1000 are fake
     edges = realEdges + fakeEdges
 
     ### save to file
-    fileName = "generated-test-data.test"
-    with open("data/" + fileName, "w+") as file:
+    with open("data/" + FILENAME, "w+") as file:
         file.write("Id\tSource\tSink")
         for i, edge in enumerate(edges):
             file.write("\n" + str(i+1) + "\t" + str(edge[0]) + "\t" + str(edge[1]))
-    print("results written to file: data/" + fileName)
+
+    print("-")
+    print("results written to file: data/" + FILENAME)
 
 
 def createFakeEdge(buffer):
