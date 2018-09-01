@@ -11,15 +11,19 @@ def main ():
 
     ### Load training data
     print("data loading...")
-
-
+    train_df = pd.read_csv("data/generated-training-data.test", sep="\t", index_col="Id")
+    test_df = pd.read_csv("data/generated-test-data.test", sep="\t", index_col="Id")
     print("data loaded")
 
-
+    ### apply labels to training and test data
+    train_df.loc[:9000, "Label"] = True
+    train_df.loc[9000:, "Label"] = False
+    test_df.loc[:1000, "Label"] = True
+    test_df.loc[1000:, "Label"] = False
 
     ### load feature extraction helper data
-    following_dict = helper.read_file("./data/train.txt")
-    followers_dict = helper.read_file("./data/followers.txt")
+    # following_dict = helper.read_file("./data/train.txt")
+    # followers_dict = helper.read_file("./data/followers.txt")
 
 
     ### todo: to Jonathan: you need to outcomment below and run to generate followers.txt file
