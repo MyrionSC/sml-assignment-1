@@ -27,17 +27,20 @@ Different Features Extractions Methods
 
 import pandas as pd
 
-def num_followers(followers_dict):
-    num_followers =pd.Series()
-    for key, value in followers_dict.items():
-        num_followers.loc[key]=len(value)
-    return num_followers
-
 def reciprocated_follows(src, sink, followers_dict):
     if src in followers_dict and sink in followers_dict and src in followers_dict[sink] and sink in followers_dict[src]:
         # print(str(src) + " and " + str(sink) + " follows each other!")
         return 1
     return 0
+
+def same_following(src, sink, following_dict):
+    if src in following_dict and sink in following_dict:
+        same_followers_num = len(set(following_dict[src]) & set(following_dict[sink]))
+        # if l != 0:
+        #     print(str(src) + " and " + str(sink) + " has follows in common: " + str(set(following_dict[src]) & set(following_dict[sink])))
+        return same_followers_num
+    return 0
+
 
 
 
@@ -62,7 +65,5 @@ def reciprocated_follows(src, sink, followers_dict):
 #         # i += 1
 #
 #     return mutual_follows
-
-
 
 

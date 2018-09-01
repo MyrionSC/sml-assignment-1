@@ -39,7 +39,18 @@ def main ():
 
     train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"],
                                                                                           followers_dict), axis=1)
-    print(train_df.head())
+    test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"],
+                                                                                          followers_dict), axis=1)
+
+    train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"],
+                                                                                          following_dict), axis=1)
+    test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"],
+                                                                                          following_dict), axis=1)
+
+
+
+
+    print(test_df.head())
 
 
 
