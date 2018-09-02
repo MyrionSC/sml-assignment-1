@@ -3,11 +3,12 @@ from random import random
 import math
 
 FILE_NAME = "generated-data.txt"
-GEN_NUM = 200000
+GEN_NUM = 20000
 GEN_NUM_HALF = int(GEN_NUM / 2)
 VERTEX_MAX = 4867136 # This is the number of nodes in train.txt
 
 def main():
+    print("Generating " + str(GEN_NUM) + " edges (half real, half fake)")
 
     ### inits
     realEdges = []
