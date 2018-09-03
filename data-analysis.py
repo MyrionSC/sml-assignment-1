@@ -1,5 +1,10 @@
 import pandas as pd
+import math
 import helper
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
+import numpy as np
 
 
 '''
@@ -30,7 +35,23 @@ Comment: We should try to make the Real and Fake edges result look somewhat simi
 
 '''
 
+
+def plot_normal_distribution(title, data_df, following_dict):
+    l = data_df.apply(lambda s: len(following_dict[s]) if s in following_dict else 1).values
+    # l = data_df.apply(lambda s: len((following_dict[s], [1])[s in following_dict])).values
+    # (falseValue, trueValue)[test == True]
+
+    mu, std = norm.fit(l)
+    print(title + " median, std")
+    print(mu, std)
+    print()
+    x = np.linspace(mu - 3 * std, mu + 3 * std, 100)
+    plt.plot(x, mlab.normpdf(x, mu, std))
+    plt.title(title)
+    plt.show()
+
 def main ():
+
 
     ### Load training data
     print("Prepairing data...")
@@ -43,6 +64,22 @@ def main ():
     print("data prepared")
     print()
     print()
+
+
+    # num of source / sinks in train.txt
+    print(sum(data_df.Source.apply(lambda r: 1 if r in following_dict else 0)))
+    print(sum(data_df.Sink.apply(lambda r: 1 if r in following_dict else 0)))
+    print(sum(test_df.Source.apply(lambda r: 1 if r in following_dict else 0)))
+    print(sum(test_df.Sink.apply(lambda r: 1 if r in following_dict else 0)))
+
+
+    plot_normal_distribution("gen-data source following", data_df.Source, following_dict)
+    plot_normal_distribution("gen-data sink following", data_df.Sink, following_dict)
+
+    plot_normal_distribution("public-test source following", test_df.Source, following_dict)
+    plot_normal_distribution("public-test sink following", test_df.Sink, following_dict)
+
+
 
     ### todo: to Jonathan: you need to outcomment 2 lines below and run to generate followers.txt file
     # followers_dict = helper.extract_followers_from_following(following_dict)
