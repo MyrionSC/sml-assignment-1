@@ -33,6 +33,7 @@ Different Features Extractions Methods
 
 import pandas as pd
 
+# src ----> sink and sink ----> src
 def reciprocated_follows(src, sink, followers_dict):
     if src in followers_dict and sink in followers_dict and src in followers_dict[sink] and sink in followers_dict[src]:
         # print(str(src) + " and " + str(sink) + " follows each other!")
@@ -43,37 +44,39 @@ def reciprocated_follows(src, sink, followers_dict):
 ## the next 4 functions are all different compinations of following for a--->b with different edge combinations to c
 ## it always returns the number of people with this specific common connection = len (c)
 
-# a<----c and b<-----c
+# src ----> c and sink -----> c
 def same_following(src, sink, following_dict):
-    if src in following_dict and sink in following_dict:
+    if sink in following_dict:
         same_following_num = len(set(following_dict[src]) & set(following_dict[sink]))
-        # if same_followers_num != 0:
-        #     print(str(src) + " and " + str(sink) + " has follows in common: " + str(set(following_dict[src]) & set(following_dict[sink])))
         return same_following_num
     return 0
 
-#a----->c and b------>c
+# src <----- c and sink <------ c
 def same_followers(src, sink, followers_dict):
-    if src in followers_dict and sink in followers_dict:
-        same_followers_num = len(set(followers_dict[src]) & set(followers_dict[sink]))
-        # if same_followers_num != 0:
-        #     print(str(src) + " and " + str(sink) + " has follows in common: " + str(set(followers_dict[src]) & set(followers_dict[sink])))
-        return same_followers_num
-    return 0    
+    same_followers_num = len(set(followers_dict[src]) & set(followers_dict[sink]))
+    return same_followers_num
 
-#a<-----c and b------>c
+#src -----> c and c ------> sink
 def same_following_followers(src, sink,followers_dict, following_dict):
-    if src in following_dict and sink in following_dict:
-        same_following_num = len(set(following_dict[src]) & set(followers_dict[sink]))
-        return same_following_num
-    return 0
+    same_following_num = len(set(following_dict[src]) & set(followers_dict[sink]))
+    return same_following_num
 
-#a----->c and b<------c
+#src <----- c and sink ------> c
 def same_followers_following(src, sink, followers_dict, following_dict):
-    if src in following_dict and sink in following_dict:
-        same_following_num = len(set(followers_dict[src]) & set(following_dict[sink]))
-        return same_following_num
-    return 0
+    same_following_num = len(set(followers_dict[src]) & set(following_dict[sink]))
+    return same_following_num
+
+
+
+
+# src ----> c ----> d -----> sink
+def following_following_follower(src, sink, following_dict, followers_dict):
+    i = 0
+    pass
+    # for c in following_dict[src]
+
+
+
 
 
 def dict_value_len(key, dict):
