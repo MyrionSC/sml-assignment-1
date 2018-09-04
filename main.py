@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import models
 import helper
 import feature_extraction
 
@@ -67,6 +66,8 @@ def main ():
     model.fit(features.values, target.values)
     print("Model trained")
 
+    # feature_df = pd.concat([train_df, test_df])
+    # feature_df.to_csv("features.csv")
 
     ### Test model
     test_features = test_df.loc[:, feature_cols]
