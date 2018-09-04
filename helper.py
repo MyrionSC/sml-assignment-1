@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 
-def read_file (filename):
+def read_file_to_dict (filename):
     data_dict = dict()
     with open(filename) as trainfile:
         for line in trainfile:

@@ -40,16 +40,16 @@ def main ():
 
 
     ### Load training data
-    print("Prepairing data...")
+    # print("Prepairing data...")
     data_df = pd.read_csv("data/generated-data.txt", sep="\t", index_col="Id")
     test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
 
     ### load feature extraction helper data
-    following_dict = helper.read_file("./data/train.txt")
-    followers_dict = helper.read_file("./data/followers.txt")
-    print("data prepared")
-    print()
-    print()
+    following_dict = helper.read_file_to_dict("./data/train.txt")
+    followers_dict = helper.read_file_to_dict("./data/followers.txt")
+    # print("data prepared")
+    # print()
+    # print()
 
 
     # num of source / sinks in train.txt
@@ -73,7 +73,7 @@ def main ():
     # followers_dict = helper.extract_followers_from_following(following_dict)
     # helper.write_dict_with_lists_to_file(followers_dict, "followers.txt")
 
-    print("Number of average followers (format: Following_num_avg Followers_num_avg)")
+    print("Average (format: Following_num_avg Followers_num_avg)")
     print()
 
     print("Real edges")
@@ -98,8 +98,6 @@ def main ():
 
 def plot_normal_distribution(title, data_df, following_dict):
     l = data_df.apply(lambda s: len(following_dict[s]) if s in following_dict else 1).values
-    # l = data_df.apply(lambda s: len((following_dict[s], [1])[s in following_dict])).values
-    # (falseValue, trueValue)[test == True]
 
     mu, std = norm.fit(l)
     print(title + ": " + str(mu) + ", " + str(std))

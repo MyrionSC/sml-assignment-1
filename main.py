@@ -21,16 +21,13 @@ def main ():
     print("Feature data loading...")
     following_dict = helper.read_file_to_dict("./data/train.txt")
     followers_dict = helper.read_file_to_dict("./data/followers.txt")
-
-    ### todo: to Jonathan: you need to outcomment 2 lines below and run to generate followers.txt file
-    # followers_dict = helper.extract_followers_from_following(following_dict)
-    # helper.write_dict_with_lists_to_file(followers_dict, "followers.txt")
     print("Feature data loaded")
 
 
     ### Extract features
     train_df, test_df = train_test_split(data_df, test_size=0.2)
-    # test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
+    train_df = train_df.copy()
+    test_df = test_df.copy()
 
     print("Extracting features...")
     # data_df["Following_Source"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], following_dict), axis=1)
@@ -39,11 +36,11 @@ def main ():
     # data_df["Sink_Followers"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], followers_dict), axis=1)
 
     train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
-    train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
-    train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
+    # train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
+    # train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
     test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
-    test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
-    test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
+    # test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
+    # test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
     print("Features extracted")
 
 
