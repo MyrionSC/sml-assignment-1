@@ -70,17 +70,16 @@ def same_followers_following(src, sink, followers_dict, following_dict):
 
 
 
-# src ----> c ----> d -----> sink
-def following_following_follower(src, sink, following_dict, followers_dict):
+# A ----> c ----> d -----> B
+def following_following_follower(A, B, following_dict, followers_dict):
     i = 0
-    for c in following_dict[src]:
-        if c in following_dict:
-            for d in following_dict[c]:
-                if d != src and d in followers_dict[sink]:
-                    i += 1
-
-
-
+    if A in following_dict:
+        for c in following_dict[A]:
+            if c in following_dict:
+                for d in following_dict[c]:
+                    if d != A and d in followers_dict[B]:
+                        i += 1
+    return i
 
 
 def dict_value_len(key, dict):
