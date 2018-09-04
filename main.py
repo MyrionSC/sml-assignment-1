@@ -19,8 +19,8 @@ def main ():
 
     ### load feature extraction helper data
     print("Feature data loading...")
-    following_dict = helper.read_file("./data/train.txt")
-    followers_dict = helper.read_file("./data/followers.txt")
+    following_dict = helper.read_file_to_dict("./data/train.txt")
+    followers_dict = helper.read_file_to_dict("./data/followers.txt")
 
     ### todo: to Jonathan: you need to outcomment 2 lines below and run to generate followers.txt file
     # followers_dict = helper.extract_followers_from_following(following_dict)
@@ -29,23 +29,26 @@ def main ():
 
 
     ### Extract features
+    train_df, test_df = train_test_split(data_df, test_size=0.2)
+    # test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
+
     print("Extracting features...")
     # data_df["Following_Source"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], following_dict), axis=1)
     # data_df["Source_Followers"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], followers_dict), axis=1)
     # data_df["Sink_Following"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
     # data_df["Sink_Followers"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], followers_dict), axis=1)
 
-    data_df["Reciprocated"] = data_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
-    data_df["Same_Follows"] = data_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
-    data_df["Same_Followers"] = data_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
+    train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
+    train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
+    train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
+    test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
+    test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
+    test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
     print("Features extracted")
 
 
     ### Train model
     print("Training model...")
-    train_df, test_df = train_test_split(data_df, test_size=0.2)
-    # test_df = pd.read_csv("data/test-public.txt")
-
     feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers"]
     # feature_cols = ["Source_Following", "Source_Followers", "Sink_Following", "Sink_Followers",
     #                 "Reciprocated", "Same_Follows", "Same_Followers"]
