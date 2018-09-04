@@ -63,9 +63,10 @@ def same_following_followers(src, sink,followers_dict, following_dict):
 
 #src <----- c and sink ------> c
 def same_followers_following(src, sink, followers_dict, following_dict):
-    same_following_num = len(set(followers_dict[src]) & set(following_dict[sink]))
-    return same_following_num
-
+    if sink in following_dict:
+        same_following_num = len(set(followers_dict[src]) & set(following_dict[sink]))
+        return same_following_num
+    return 0
 
 
 
