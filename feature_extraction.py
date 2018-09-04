@@ -73,8 +73,11 @@ def same_followers_following(src, sink, followers_dict, following_dict):
 # src ----> c ----> d -----> sink
 def following_following_follower(src, sink, following_dict, followers_dict):
     i = 0
-    pass
-    # for c in following_dict[src]
+    for c in following_dict[src]:
+        if c in following_dict:
+            for d in following_dict[c]:
+                if d != src and d in followers_dict[sink]:
+                    i += 1
 
 
 
