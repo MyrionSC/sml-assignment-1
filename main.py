@@ -11,6 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
 def main ():
+    test_public_prediction = False
 
     ### Load training data
     print("Training and test data loading...")
@@ -25,12 +26,17 @@ def main ():
 
 
     ### Extract features
-    train_df, test_df = train_test_split(data_df, test_size=0.2)
-    # test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
-    train_df = train_df.copy()
-    test_df = test_df.copy()
+    if test_public_prediction:
+        train_df = data_df.copy()
+        test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
+        test_public_prediction = True
+    else:
+        train_df, test_df = train_test_split(data_df, test_size=0.2)
+        train_df = train_df.copy()
+        test_df = test_df.copy()
 
     print("Extracting features...")
+<<<<<<< HEAD
     
     #buidling vectorized functions:
     vec_following_followers = np.vectorize(feature_extraction.same_following_followers)
@@ -50,17 +56,37 @@ def main ():
     test_df["followers_following"] = vec_followers_followings(test_df["Source"], test_df["Sink"], followers_dict, following_dict)
     
 
+=======
+    train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
+    train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
+    train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
+    train_df["Same_following_followers"] = train_df.apply(lambda row: feature_extraction.same_following_followers(row["Source"], row["Sink"], followers_dict, following_dict), axis=1)
+    train_df["Same_followers_following"] = train_df.apply(lambda row: feature_extraction.same_followers_following(row["Source"], row["Sink"], followers_dict, following_dict), axis=1)
+
+    test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
+    test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
+    test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
+    test_df["Same_following_followers"] = test_df.apply(lambda row: feature_extraction.same_following_followers(row["Source"], row["Sink"], followers_dict, following_dict), axis=1)
+    test_df["Same_followers_following"] = test_df.apply(lambda row: feature_extraction.same_followers_following(row["Source"], row["Sink"], followers_dict, following_dict), axis=1)
+>>>>>>> da500a343f4b818ad7d1e407afea8fe7aacd5dfc
     print("Features extracted")
 
 
     ### Train model
     print("Training model...")
+<<<<<<< HEAD
     feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers", "followers_following","following_followers"]
     # feature_cols = ["Source_Following", "Source_Followers", "Sink_Following", "Sink_Followers",
     #                 "Reciprocated", "Same_Follows", "Same_Followers"]
+=======
+    feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers", "Same_following_followers", "Same_followers_following"]
+>>>>>>> da500a343f4b818ad7d1e407afea8fe7aacd5dfc
     features = train_df.loc[:, feature_cols]
     target = train_df.Label
 
+    # try XGBRegressor
+    # try predict_proba
+    # try XGBRanker
     model = XGBClassifier()
     model.fit(features.values, target.values)
     print("Model trained")
@@ -68,13 +94,14 @@ def main ():
 
     ### Test model
     test_features = test_df.loc[:, feature_cols]
+    # predictions = model.predict_proba(test_features.values)
     predictions = model.predict(test_features.values)
 
-    auc = sklearn.metrics.roc_auc_score(test_df["Label"],predictions)
-    print("AUC: ", auc)
-
-    # helper.save_predictions_to_file(test_features, predictions)
-
+    if test_public_prediction:
+        helper.save_predictions_to_file(test_features, predictions)
+    else:
+        auc = sklearn.metrics.roc_auc_score(test_df["Label"],predictions)
+        print("AUC: ", auc)
 
 
 if __name__ == '__main__':

@@ -23,7 +23,7 @@ def save_predictions_to_file (test_features, predictions):
     predictions_df = pd.DataFrame({'Id': test_features.index, 'Prediction': list(map(int, predictions))}).set_index('Id')
     predictions_df.to_csv('output/' + filename)
 
-    print("output written to file: output/" + filename)
+    print("prediction written to file: output/" + filename)
 
 
 def write_dict_with_lists_to_file (list_dict, filename):
