@@ -12,9 +12,9 @@ def read_file_to_dict (filename):
 
 
 
-    ### Save predictions to file
-    ### prediction is a list of values
-    # write_file(predictions)
+### Save predictions to file
+### prediction is a list of values
+# write_file(predictions)
 
 def save_predictions_to_file (test_features, predictions):
     filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".csv"
