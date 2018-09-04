@@ -11,7 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
 def main ():
-    test_public_prediction = False
+    test_public_prediction = True
 
     ### Load training data
     print("Training and test data loading...")
@@ -66,8 +66,9 @@ def main ():
 
     ### Test model
     test_features = test_df.loc[:, feature_cols]
-    # predictions = model.predict_proba(test_features.values)
     predictions = model.predict(test_features.values)
+    # predictions_p = model.predict_proba(test_features.values)
+    # predictions = predictions_p[:,1].tolist() # column 1 is the true prediction
 
     if test_public_prediction:
         helper.save_predictions_to_file(test_features, predictions)
