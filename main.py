@@ -31,21 +31,23 @@ def main ():
     test_df = test_df.copy()
 
     print("Extracting features...")
-    # data_df["Following_Source"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], following_dict), axis=1)
-    # data_df["Source_Followers"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], followers_dict), axis=1)
-    # data_df["Sink_Following"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
-    # data_df["Sink_Followers"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], followers_dict), axis=1)
+    
+    #buidling vectorized functions:
+    vec_following_followers = np.vectorize(feature_extraction.same_following_followers)
+    vec_followers_followings = np.vectorize(feature_extraction.same_followers_following)
 
     train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
     train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
     train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
-    train_df["Same_following_followers"] = train_df.apply(lambda row: feature_extraction.same_following_followers(row["Source"], row["Sink"], followers_dict, following_dict), axis=1)
+    train_df["following_followers"] = vec_following_followers(train_df["Source"], train_df["Sink"], followers_dict, following_dict)
+    train_df["followers_following"] = vec_followers_followings(train_df["Source"], train_df["Sink"], followers_dict, following_dict)
     
     
     test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
     test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
     test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
-    test_df["Same_following_followers"] = test_df.apply(lambda row: feature_extraction.same_following_followers(row["Source"], row["Sink"], followers_dict, following_dict), axis=1)
+    test_df["following_followers"] = vec_following_followers(test_df["Source"], test_df["Sink"], followers_dict, following_dict)
+    test_df["followers_following"] = vec_followers_followings(test_df["Source"], test_df["Sink"], followers_dict, following_dict)
     
 
     print("Features extracted")
@@ -53,7 +55,7 @@ def main ():
 
     ### Train model
     print("Training model...")
-    feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers", "Same_following_followers"]
+    feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers", "followers_following","following_followers"]
     # feature_cols = ["Source_Following", "Source_Followers", "Sink_Following", "Sink_Followers",
     #                 "Reciprocated", "Same_Follows", "Same_Followers"]
     features = train_df.loc[:, feature_cols]
