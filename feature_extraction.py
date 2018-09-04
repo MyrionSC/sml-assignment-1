@@ -39,6 +39,11 @@ def reciprocated_follows(src, sink, followers_dict):
         return 1
     return 0
 
+
+## the next 4 functions are all different compinations of following for a--->b with different edge combinations to c
+## it always returns the number of people with this specific common connection = len (c)
+
+# a<----c and b<-----c
 def same_following(src, sink, following_dict):
     if src in following_dict and sink in following_dict:
         same_following_num = len(set(following_dict[src]) & set(following_dict[sink]))
@@ -47,12 +52,27 @@ def same_following(src, sink, following_dict):
         return same_following_num
     return 0
 
+#a----->c and b------>c
 def same_followers(src, sink, followers_dict):
     if src in followers_dict and sink in followers_dict:
         same_followers_num = len(set(followers_dict[src]) & set(followers_dict[sink]))
         # if same_followers_num != 0:
         #     print(str(src) + " and " + str(sink) + " has follows in common: " + str(set(followers_dict[src]) & set(followers_dict[sink])))
         return same_followers_num
+    return 0    
+
+#a<-----c and b------>c
+def same_following_followers(src, sink,followers_dict, following_dict):
+    if src in following_dict and sink in following_dict:
+        same_following_num = len(set(following_dict[src]) & set(followers_dict[sink]))
+        return same_following_num
+    return 0
+
+#a----->c and b<------c
+def same_followers_following(src, sink, followers_dict, following_dict):
+    if src in following_dict and sink in following_dict:
+        same_following_num = len(set(followers_dict[src]) & set(following_dict[sink]))
+        return same_following_num
     return 0
 
 
