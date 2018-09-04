@@ -7,7 +7,7 @@ from scipy.stats import norm
 import helper
 
 FILE_NAME = "generated-data.txt"
-GEN_NUM = 100000
+GEN_NUM = 20000
 GEN_NUM_HALF = int(GEN_NUM / 2)
 VERTEX_MAX = 4867136 # This is the number of nodes in train.txt
 
@@ -56,7 +56,7 @@ def main():
     print("Fake edges generated")
 
     ### merge the real and fake edges
-    return realEdges + fakeEdges
+    edges = realEdges + fakeEdges
 
 
     ### save to files

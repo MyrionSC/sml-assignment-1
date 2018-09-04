@@ -22,9 +22,6 @@ def main ():
     following_dict = helper.read_file_to_dict("./data/train.txt")
     followers_dict = helper.read_file_to_dict("./data/followers.txt")
 
-    ### todo: to Jonathan: you need to outcomment 2 lines below and run to generate followers.txt file
-    # followers_dict = helper.extract_followers_from_following(following_dict)
-    # helper.write_dict_with_lists_to_file(followers_dict, "followers.txt")
     print("Feature data loaded")
 
 
