@@ -3,7 +3,6 @@ import math
 import helper
 from scipy.stats import norm
 import matplotlib.pyplot as plt
-import matplotlib.mlab as mlab
 import numpy as np
 
 
@@ -36,19 +35,6 @@ Comment: We should try to make the Real and Fake edges result look somewhat simi
 '''
 
 
-def plot_normal_distribution(title, data_df, following_dict):
-    l = data_df.apply(lambda s: len(following_dict[s]) if s in following_dict else 1).values
-    # l = data_df.apply(lambda s: len((following_dict[s], [1])[s in following_dict])).values
-    # (falseValue, trueValue)[test == True]
-
-    mu, std = norm.fit(l)
-    print(title + " median, std")
-    print(mu, std)
-    print()
-    x = np.linspace(mu - 3 * std, mu + 3 * std, 100)
-    plt.plot(x, mlab.normpdf(x, mu, std))
-    plt.title(title)
-    plt.show()
 
 def main ():
 
@@ -67,25 +53,27 @@ def main ():
 
 
     # num of source / sinks in train.txt
-    print(sum(data_df.Source.apply(lambda r: 1 if r in following_dict else 0)))
-    print(sum(data_df.Sink.apply(lambda r: 1 if r in following_dict else 0)))
-    print(sum(test_df.Source.apply(lambda r: 1 if r in following_dict else 0)))
-    print(sum(test_df.Sink.apply(lambda r: 1 if r in following_dict else 0)))
+    print("num of Source and sinks that we have data for")
+    print("gen-data source: " + str(sum(data_df.Source.apply(lambda r: 1 if r in following_dict else 0))))
+    print("gen-data sink: " + str(sum(data_df.Sink.apply(lambda r: 1 if r in following_dict else 0))))
+    print("test-public source: " + str(sum(test_df.Source.apply(lambda r: 1 if r in following_dict else 0))))
+    print("test-public sink: " + str(sum(test_df.Sink.apply(lambda r: 1 if r in following_dict else 0))))
+    print()
 
-
+    # plot normal distribution of following numbers
+    print("Normal distribution of number of followers: (format: TITLE: MEAN, STANDARD_DEVIATION)")
     plot_normal_distribution("gen-data source following", data_df.Source, following_dict)
     plot_normal_distribution("gen-data sink following", data_df.Sink, following_dict)
-
     plot_normal_distribution("public-test source following", test_df.Source, following_dict)
     plot_normal_distribution("public-test sink following", test_df.Sink, following_dict)
-
-
+    print()
+    print()
 
     ### todo: to Jonathan: you need to outcomment 2 lines below and run to generate followers.txt file
     # followers_dict = helper.extract_followers_from_following(following_dict)
     # helper.write_dict_with_lists_to_file(followers_dict, "followers.txt")
 
-    print("format: Following_num_avg Followers_num_avg")
+    print("Number of average followers (format: Following_num_avg Followers_num_avg)")
     print()
 
     print("Real edges")
@@ -106,6 +94,19 @@ def main ():
     print("Test-Public")
     extract_followers_following_avg(test_df, following_dict, followers_dict)
 
+
+
+def plot_normal_distribution(title, data_df, following_dict):
+    l = data_df.apply(lambda s: len(following_dict[s]) if s in following_dict else 1).values
+    # l = data_df.apply(lambda s: len((following_dict[s], [1])[s in following_dict])).values
+    # (falseValue, trueValue)[test == True]
+
+    mu, std = norm.fit(l)
+    print(title + ": " + str(mu) + ", " + str(std))
+    x = np.linspace(mu - 3 * std, mu + 3 * std, 100)
+    plt.plot(x, norm.pdf(x, mu, std))
+    plt.title(title)
+    plt.show()
 
 def extract_followers_following_avg(edges_df, following_dict, followers_dict):
     data_source_following_sum = 0

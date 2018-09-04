@@ -3,7 +3,7 @@ from random import random
 import math
 
 FILE_NAME = "generated-data.txt"
-GEN_NUM = 20000
+GEN_NUM = 2000
 GEN_NUM_HALF = int(GEN_NUM / 2)
 VERTEX_MAX = 4867136 # This is the number of nodes in train.txt
 
@@ -55,8 +55,8 @@ def main():
             file.write("\n" + str(i+1).strip() + "\t" + str(edge[0]).strip() + "\t" + str(edge[1]).strip() +
                        "\t" + str(edge[2]).strip())
 
-    # print("-")
-    # print("Generated data written to file: data/" + FILE_NAME)
+    print("-")
+    print("Generated data written to file: data/" + FILE_NAME)
 
 
 def createFakeEdge(buffer, test_public_dict):
