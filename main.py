@@ -21,13 +21,14 @@ def main ():
     print("Feature data loading...")
     following_dict = helper.read_file_to_dict("./data/train.txt")
     followers_dict = helper.read_file_to_dict("./data/followers.txt")
-
     print("Feature data loaded")
 
 
     ### Extract features
     train_df, test_df = train_test_split(data_df, test_size=0.2)
     # test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
+    train_df = train_df.copy()
+    test_df = test_df.copy()
 
     print("Extracting features...")
     # data_df["Following_Source"] = data_df.apply(lambda row: feature_extraction.dict_value_len(row["Source"], following_dict), axis=1)
