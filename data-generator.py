@@ -17,6 +17,7 @@ def main():
 
     print("Loading data files...")
     following_dict = helper.read_file_to_dict("./data/train.txt")
+    followers_dict = helper.read_file_to_dict("./data/followers.txt")
     print("Load done")
     print()
 
@@ -47,9 +48,18 @@ def main():
     test_public_df = pd.read_csv("data/test-public.txt", sep="\t")
     test_public_dict = dict(zip(list(test_public_df.Source), list(test_public_df.Sink)))
 
+    followers_min_n_dict = {}
+    n = 10
+    for key, value in followers_dict.items():
+        if len(followers_dict[key]) < 10:
+            followers_min_n_dict[key] = value
+
+    print(len(followers_dict))
+    print(len(followers_min_n_dict))
+
     progress_percent = 0
     for i in range(0, GEN_NUM_HALF):
-        fakeEdges.append(createFakeEdge(following_dict, test_public_dict))
+        fakeEdges.append(createFakeEdge(following_dict, followers_min_n_dict, test_public_dict))
         if i % progress_mod == 0:
             print("Progress: " + str(progress_percent) + "%")
             progress_percent += 10
@@ -70,25 +80,36 @@ def main():
     print("Generated data written to file: data/" + FILE_NAME)
 
 
-def createFakeEdge(following_dict, test_public_dict):
+# try to only take sinks with min followers n
+# Observation: Looking at number of sink followers is a horrible feature
+#   - this may imply that sinks in test-public has a minimum amount of followers (It's a long shot)
+
+def createFakeEdge(following_dict, followers_min_n_dict, test_public_dict):
     while True:
         # source = normal_choice(sorted_following_num_list, mean, std)[0]
         source = random.choice(list(following_dict.keys()))
         if len(following_dict[source]) != 0:
             break
 
-    fakeDest = random.randrange(0, VERTEX_MAX + 1)
+    sink = random.choice(list(following_dict.keys()))
+
+    # while True:
+    #     fakeSinkKey = random.randint(0, len(following_dict) - 1)
+    #     if fakeSinkKey in followers_min_n_dict:
+    #         fakeDest = fakeSinkKey
+    #         break
+
     #test if edge is accidentally real
     for edge in following_dict[source]:
-        if int(edge) == fakeDest:
+        if int(edge) == sink:
             # real edge accidentally hit, try again
-            return createFakeEdge(following_dict, test_public_dict)
+            return createFakeEdge(following_dict, followers_min_n_dict, test_public_dict)
         elif source in test_public_dict and test_public_dict[source] == int(edge):
             # accidentally hit edge in test_public which might be real
-            return createFakeEdge(following_dict, test_public_dict)
+            return createFakeEdge(following_dict, followers_min_n_dict, test_public_dict)
 
     # edge is not real
-    return source, fakeDest, False
+    return source, sink, False
 
 
 def normal_choice(lst, mean, stddev):

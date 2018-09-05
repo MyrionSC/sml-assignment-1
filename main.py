@@ -66,12 +66,13 @@ def main ():
     print("Features extracted")
 
     # save features to file
-    feature_df = pd.concat([train_df, test_df])[['Label','Jacard_similarity']]
+    # feature_df = pd.concat([train_df, test_df])[['Label','Jacard_similarity']]
+    feature_df = pd.concat([train_df, test_df])
     feature_df.to_csv("features.csv")
 
     ### Train model
     print("Training model...")
-    feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers", "Followers_following","Following_followers"]
+    feature_cols = ["Jacard_similarity", "Reciprocated", "Same_Follows", "Same_Followers", "Followers_following","Following_followers"]
     features = train_df.loc[:, feature_cols]
     target = train_df.Label
 

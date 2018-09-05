@@ -132,7 +132,8 @@ def plot_normal_distribution(title, data_series, dict):
 def plot_histogram(title, data_series, dict):
     x = []
     for key in data_series.values:
-        if key in dict and len(dict[key]) < 20000:
+        # if key in dict and len(dict[key]) < 20000:
+        if key in dict:
             x.append(len(dict[key]))
 
     print(title)
