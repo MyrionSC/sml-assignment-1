@@ -2,6 +2,7 @@
 import helper
 import feature_extraction
 
+import time
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import sklearn.metrics
@@ -11,6 +12,7 @@ from sklearn.model_selection import train_test_split
 
 def main ():
     test_public_prediction = False
+    start_time = time.time()
 
     ### Load training data
     print("Training and test data loading...")
@@ -44,21 +46,23 @@ def main ():
     train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
     train_df["Following_followers"] = vec_following_followers(train_df["Source"], train_df["Sink"], followers_dict, following_dict)
     train_df["Followers_following"] = vec_followers_followings(train_df["Source"], train_df["Sink"], followers_dict, following_dict)
-    # train_df["Following_following_follower"] = train_df.apply(lambda row: feature_extraction.following_following_follower(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
-
+    # test_df["Src_following_following_sink"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
+    # test_df["Sink_following_following_src"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Sink"], row["Source"], following_dict, followers_dict), axis=1)
     
     test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
     test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
     test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
     test_df["Following_followers"] = vec_following_followers(test_df["Source"], test_df["Sink"], followers_dict, following_dict)
     test_df["Followers_following"] = vec_followers_followings(test_df["Source"], test_df["Sink"], followers_dict, following_dict)
-    # test_df["Following_following_follower"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
+    # test_df["Src_following_following_sink"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
+    # test_df["Sink_following_following_src"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Sink"], row["Source"], following_dict, followers_dict), axis=1)
     print("Features extracted")
 
 
     ### Train model
     print("Training model...")
     feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers", "Followers_following","Following_followers"]
+                    # "Src_following_following_sink", "Sink_following_following_src"]
     features = train_df.loc[:, feature_cols]
     target = train_df.Label
 
@@ -66,8 +70,8 @@ def main ():
     model.fit(features.values, target.values)
     print("Model trained")
 
-    # feature_df = pd.concat([train_df, test_df])
-    # feature_df.to_csv("features.csv")
+    feature_df = pd.concat([train_df, test_df])
+    feature_df.to_csv("features.csv")
 
     ### Test model
     test_features = test_df.loc[:, feature_cols]
@@ -81,6 +85,8 @@ def main ():
         auc = sklearn.metrics.roc_auc_score(test_df["Label"],predictions)
         print("AUC: ", auc)
 
+    print()
+    print("execution time: " + str(time.time() - start_time))
 
 if __name__ == '__main__':
     main()
