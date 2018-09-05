@@ -11,7 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
 def main ():
-    test_public_prediction = False
+    test_public_prediction = True
     start_time = time.time()
 
     ### Load training data
@@ -30,17 +30,19 @@ def main ():
     if test_public_prediction:
         train_df = data_df.copy()
         test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
-        test_public_prediction = True
     else:
         train_df, test_df = train_test_split(data_df, test_size=0.2)
-        train_df = train_df.copy()
-        test_df = test_df.copy()
+        train_df, test_df = train_df.copy(), test_df.copy()
 
     print("Extracting features...")
+
+
     #buidling vectorized functions:
     vec_following_followers = np.vectorize(feature_extraction.same_following_followers)
     vec_followers_followings = np.vectorize(feature_extraction.same_followers_following)
 
+    # train_df["Sink_following"] = train_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
+    # train_df["Sink_followers"] = train_df.apply(lambda row: len(followers_dict[row["Sink"]]), axis=1)
     train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
     train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
     train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
@@ -48,7 +50,10 @@ def main ():
     train_df["Followers_following"] = vec_followers_followings(train_df["Source"], train_df["Sink"], followers_dict, following_dict)
     # test_df["Src_following_following_sink"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
     # test_df["Sink_following_following_src"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Sink"], row["Source"], following_dict, followers_dict), axis=1)
-    
+
+
+    # test_df["Sink_following"] = test_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
+    # test_df["Sink_followers"] = test_df.apply(lambda row: len(followers_dict[row["Sink"]]), axis=1)
     test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
     test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
     test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
@@ -58,11 +63,13 @@ def main ():
     # test_df["Sink_following_following_src"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Sink"], row["Source"], following_dict, followers_dict), axis=1)
     print("Features extracted")
 
+    # save features to file
+    feature_df = pd.concat([train_df, test_df])
+    feature_df.to_csv("features.csv")
 
     ### Train model
     print("Training model...")
     feature_cols = ["Reciprocated", "Same_Follows", "Same_Followers", "Followers_following","Following_followers"]
-                    # "Src_following_following_sink", "Sink_following_following_src"]
     features = train_df.loc[:, feature_cols]
     target = train_df.Label
 
@@ -70,12 +77,16 @@ def main ():
     model.fit(features.values, target.values)
     print("Model trained")
 
-    feature_df = pd.concat([train_df, test_df])
-    feature_df.to_csv("features.csv")
+    logreg_model = LogisticRegression()
+    logreg_model.fit(features, target)
+
 
     ### Test model
     test_features = test_df.loc[:, feature_cols]
     predictions = model.predict(test_features.values)
+    predictions_logreg = logreg_model.predict(test_features)
+
+
     # predictions_p = model.predict_proba(test_features.values)
     # predictions = predictions_p[:,1].tolist() # column 1 is the true prediction
 
@@ -83,7 +94,9 @@ def main ():
         helper.save_predictions_to_file(test_features, predictions)
     else:
         auc = sklearn.metrics.roc_auc_score(test_df["Label"],predictions)
+        auc_logreg = sklearn.metrics.roc_auc_score(test_df["Label"],predictions_logreg)
         print("AUC: ", auc)
+        print("AUC_logreg: ", auc_logreg)
 
     print()
     print("execution time: " + str(time.time() - start_time))

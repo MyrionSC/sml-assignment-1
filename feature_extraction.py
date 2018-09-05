@@ -69,7 +69,6 @@ def same_followers_following(src, sink, followers_dict, following_dict):
     return 0
 
 
-
 # A ----> c ----> d -----> B
 def following_following_follower(A, B, following_dict, followers_dict):
     i = 0
