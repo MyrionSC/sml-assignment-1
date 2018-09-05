@@ -11,7 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
 def main ():
-    test_public_prediction = True
+    test_public_prediction = False
     start_time = time.time()
 
     ### Load training data
@@ -43,6 +43,7 @@ def main ():
 
     # train_df["Sink_following"] = train_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
     # train_df["Sink_followers"] = train_df.apply(lambda row: len(followers_dict[row["Sink"]]), axis=1)
+    train_df["Jacard_similarity"] = train_df.apply(lambda row: feature_extraction.jacard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
     train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
     train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
     train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
@@ -54,6 +55,7 @@ def main ():
 
     # test_df["Sink_following"] = test_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
     # test_df["Sink_followers"] = test_df.apply(lambda row: len(followers_dict[row["Sink"]]), axis=1)
+    test_df["Jacard_similarity"] = test_df.apply(lambda row: feature_extraction.jacard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
     test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
     test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
     test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
@@ -64,7 +66,7 @@ def main ():
     print("Features extracted")
 
     # save features to file
-    feature_df = pd.concat([train_df, test_df])
+    feature_df = pd.concat([train_df, test_df])[['Label','Jacard_similarity']]
     feature_df.to_csv("features.csv")
 
     ### Train model
