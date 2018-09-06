@@ -10,21 +10,43 @@ from xgboost import XGBClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
-def main ():
-    test_public_prediction = False
-    start_time = time.time()
-
+def load_data(data,following,followers):
     ### Load training data
     print("Training and test data loading...")
-    data_df = pd.read_csv("data/generated-data.txt", sep="\t", index_col="Id")
+    data_df = pd.read_csv(data, sep="\t", index_col="Id")
     print("Training and test data loaded")
 
     ### load feature extraction helper data
     print("Feature data loading...")
-    following_dict = helper.read_file_to_dict("./data/train.txt")
-    followers_dict = helper.read_file_to_dict("./data/followers.txt")
+    following_dict = helper.read_file_to_dict(following)
+    followers_dict = helper.read_file_to_dict(followers)
     print("Feature data loaded")
+    return data_df,following_dict,followers_dict
 
+
+def extract_features(df, followers_dict, following_dict):
+    df = df.copy()
+    #buidling vectorized functions:
+    vec_following_followers = np.vectorize(feature_extraction.same_following_followers)
+    vec_followers_followings = np.vectorize(feature_extraction.same_followers_following)
+
+    df["Jacard_similarity"] = df.apply(lambda row: feature_extraction.jacard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
+    df["Reciprocated"] = df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
+    df["Same_Follows"] = df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
+    df["Same_Followers"] = df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
+    df["Following_followers"] = vec_following_followers(df["Source"], df["Sink"], followers_dict, following_dict)
+    df["Followers_following"] = vec_followers_followings(df["Source"], df["Sink"], followers_dict, following_dict)
+
+    return df
+
+def main ():
+    test_public_prediction = False
+    start_time = time.time()
+    data_file = "data/generated-data.txt"
+    following_file = "./data/train.txt"
+    followers_file = "./data/followers.txt"
+
+    data_df,following_dict, followers_dict = load_data(data_file,following_file,followers_file)
 
     ### Extract features
     if test_public_prediction:
@@ -35,34 +57,8 @@ def main ():
         train_df, test_df = train_df.copy(), test_df.copy()
 
     print("Extracting features...")
-
-
-    #buidling vectorized functions:
-    vec_following_followers = np.vectorize(feature_extraction.same_following_followers)
-    vec_followers_followings = np.vectorize(feature_extraction.same_followers_following)
-
-    # train_df["Sink_following"] = train_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
-    # train_df["Sink_followers"] = train_df.apply(lambda row: len(followers_dict[row["Sink"]]), axis=1)
-    train_df["Jacard_similarity"] = train_df.apply(lambda row: feature_extraction.jacard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
-    train_df["Reciprocated"] = train_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
-    train_df["Same_Follows"] = train_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
-    train_df["Same_Followers"] = train_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
-    train_df["Following_followers"] = vec_following_followers(train_df["Source"], train_df["Sink"], followers_dict, following_dict)
-    train_df["Followers_following"] = vec_followers_followings(train_df["Source"], train_df["Sink"], followers_dict, following_dict)
-    # test_df["Src_following_following_sink"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
-    # test_df["Sink_following_following_src"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Sink"], row["Source"], following_dict, followers_dict), axis=1)
-
-
-    # test_df["Sink_following"] = test_df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
-    # test_df["Sink_followers"] = test_df.apply(lambda row: len(followers_dict[row["Sink"]]), axis=1)
-    test_df["Jacard_similarity"] = test_df.apply(lambda row: feature_extraction.jacard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
-    test_df["Reciprocated"] = test_df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
-    test_df["Same_Follows"] = test_df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
-    test_df["Same_Followers"] = test_df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
-    test_df["Following_followers"] = vec_following_followers(test_df["Source"], test_df["Sink"], followers_dict, following_dict)
-    test_df["Followers_following"] = vec_followers_followings(test_df["Source"], test_df["Sink"], followers_dict, following_dict)
-    # test_df["Src_following_following_sink"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
-    # test_df["Sink_following_following_src"] = test_df.apply(lambda row: feature_extraction.following_following_follower(row["Sink"], row["Source"], following_dict, followers_dict), axis=1)
+    train_df = extract_features(train_df,followers_dict, following_dict)
+    test_df = extract_features(test_df,followers_dict, following_dict)
     print("Features extracted")
 
     # save features to file
