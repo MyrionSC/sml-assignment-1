@@ -35,7 +35,7 @@ import pandas as pd
 
 # src ----> sink and sink ----> src
 def reciprocated_follows(src, sink, followers_dict):
-    if src in followers_dict and sink in followers_dict and src in followers_dict[sink] and sink in followers_dict[src]:
+    if sink in followers_dict[src]:
         # print(str(src) + " and " + str(sink) + " follows each other!")
         return 1
     return 0
@@ -68,16 +68,27 @@ def same_followers_following(src, sink, followers_dict, following_dict):
         return same_following_num
     return 0
 
+def jacard_similarity(src, sink, following_dict, followers_dict):
+    src_neighbor_set = set(following_dict[src]) | set(followers_dict[src])
+    sink_neighbor_set = set(following_dict[sink]) if sink in following_dict else set() | set(followers_dict[sink])
 
 
-# src ----> c ----> d -----> sink
-def following_following_follower(src, sink, following_dict, followers_dict):
+
+    intersection = src_neighbor_set & sink_neighbor_set
+    union = src_neighbor_set | sink_neighbor_set
+
+    return len(intersection) / len(union)
+
+# A ----> c ----> d -----> B
+def following_following_follower(A, B, following_dict, followers_dict):
     i = 0
-    pass
-    # for c in following_dict[src]
-
-
-
+    if A in following_dict:
+        for c in following_dict[A]:
+            if c in following_dict:
+                for d in following_dict[c]:
+                    if d != A and d in followers_dict[B]:
+                        i += 1
+    return i
 
 
 def dict_value_len(key, dict):
