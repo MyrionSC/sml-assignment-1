@@ -23,82 +23,20 @@ def load_data(data,following,followers):
     print("Feature data loaded")
     return data_df,following_dict,followers_dict
 
-
-def extract_features(df, followers_dict, following_dict):
-    df = df.copy()
-    #buidling vectorized functions:
-    vec_following_followers = np.vectorize(feature_extraction.same_following_followers)
-    vec_followers_followings = np.vectorize(feature_extraction.same_followers_following)
-
-    df["Jacard_similarity"] = df.apply(lambda row: feature_extraction.jacard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
-    df["Reciprocated"] = df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
-    df["Same_Follows"] = df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
-    df["Same_Followers"] = df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
-    df["Following_followers"] = vec_following_followers(df["Source"], df["Sink"], followers_dict, following_dict)
-    df["Followers_following"] = vec_followers_followings(df["Source"], df["Sink"], followers_dict, following_dict)
-
-    return df
-
 def main ():
-    test_public_prediction = False
-    start_time = time.time()
     data_file = "data/generated-data.txt"
     following_file = "./data/train.txt"
     followers_file = "./data/followers.txt"
 
-    data_df,following_dict, followers_dict = load_data(data_file,following_file,followers_file)
+    _, following_dict, followers_dict = load_data(data_file,following_file,followers_file)
+    test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
 
-    ### Extract features
-    if test_public_prediction:
-        train_df = data_df.copy()
-        test_df = pd.read_csv("data/test-public.txt", sep="\t", index_col="Id")
-    else:
-        train_df, test_df = train_test_split(data_df, test_size=0.2)
-        train_df, test_df = train_df.copy(), test_df.copy()
-
-    print("Extracting features...")
-    train_df = extract_features(train_df,followers_dict, following_dict)
-    test_df = extract_features(test_df,followers_dict, following_dict)
-    print("Features extracted")
-
-    # save features to file
-    # feature_df = pd.concat([train_df, test_df])[['Label','Jacard_similarity']]
-    feature_df = pd.concat([train_df, test_df])
-    feature_df.to_csv("features.csv")
-
-    ### Train model
-    print("Training model...")
-    feature_cols = ["Jacard_similarity", "Reciprocated", "Same_Follows", "Same_Followers", "Followers_following","Following_followers"]
-    features = train_df.loc[:, feature_cols]
-    target = train_df.Label
-
-    model = XGBClassifier()
-    model.fit(features.values, target.values)
-    print("Model trained")
-
-    logreg_model = LogisticRegression()
-    logreg_model.fit(features, target)
-
-
-    ### Test model
-    test_features = test_df.loc[:, feature_cols]
-    predictions = model.predict(test_features.values)
-    predictions_logreg = logreg_model.predict(test_features)
-
-
-    # predictions_p = model.predict_proba(test_features.values)
-    # predictions = predictions_p[:,1].tolist() # column 1 is the true prediction
-
-    if test_public_prediction:
-        helper.save_predictions_to_file(test_features, predictions)
-    else:
-        auc = sklearn.metrics.roc_auc_score(test_df["Label"],predictions)
-        auc_logreg = sklearn.metrics.roc_auc_score(test_df["Label"],predictions_logreg)
-        print("AUC: ", auc)
-        print("AUC_logreg: ", auc_logreg)
-
-    print()
-    print("execution time: " + str(time.time() - start_time))
+    test_df["Jacard_similarity"] = test_df.apply(lambda row: feature_extraction.jaccard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
+    jaccard_max = test_df["Jacard_similarity"].max()
+    norm = 1 / jaccard_max
+    test_df["Prediction"] = test_df["Jacard_similarity"] * norm
+    prediction_df = test_df.drop(["Source", "Sink", "Jacard_similarity"], axis=1)
+    prediction_df.to_csv("jaccard-index-prediction.csv")
 
 if __name__ == '__main__':
     main()
