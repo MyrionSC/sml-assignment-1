@@ -144,9 +144,9 @@ def plot_histogram(title, data_series, dict):
     # x = np.random.normal(size=1000)
     plt.title(title)
     # bins = 10 ** (np.arange(0, 3, 0.10)) # do it yourself x axis log
-    bins = (np.arange(0, 100))
 
-    plt.hist(x, log=True, bins=bins)
+
+    plt.hist(x, log=True)
     print(plt.axis())
     # x1, x2, y1, y2 = plt.axis()
     # plt.axis((x1,x2,y1,200))
