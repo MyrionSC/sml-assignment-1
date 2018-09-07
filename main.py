@@ -18,6 +18,17 @@ def load_data(following):
     print("Feature data loaded")
     return following_dict,followers_dict
 
+
+def normalize_jac(jac,scale= 2.6):
+    jac_loc =np.log(np.round(jac,4) *10000)
+    jac_loc = jac_loc.replace([np.inf, -np.inf], 0)
+    df = jac_loc.to_frame()
+    df["1"] = 10
+    df.iloc[:,0] = df.iloc[:,0]*scale
+    res = df.min(axis=1)/10
+    return res
+
+
 def main ():
     following_file = "./data/train.txt"
     prediction_file = "prediction.csv"
@@ -27,9 +38,7 @@ def main ():
 
     print("creating features")
     test_df["Jacard_similarity"] = test_df.apply(lambda row: feature_extraction.jaccard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
-    jaccard_max = test_df["Jacard_similarity"].max()
-    norm = 1 / jaccard_max
-    test_df["Prediction"] = test_df["Jacard_similarity"] * norm
+    test_df["Prediction"] = normalize_jac(test_df["Jacard_similarity"])
     prediction_df = test_df.drop(["Source", "Sink", "Jacard_similarity"], axis=1)
     prediction_df.to_csv(prediction_file)
     print("predictions written to file: " + prediction_file)
