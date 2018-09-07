@@ -31,18 +31,33 @@ def extract_features(df, followers_dict, following_dict):
     vec_followers_followings = np.vectorize(feature_extraction.same_followers_following)
 
     df["Jacard_similarity"] = df.apply(lambda row: feature_extraction.jacard_similarity(row["Source"], row["Sink"], following_dict, followers_dict), axis=1)
-    df["Reciprocated"] = df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
-    df["Same_Follows"] = df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
-    df["Same_Followers"] = df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
-    df["Following_followers"] = vec_following_followers(df["Source"], df["Sink"], followers_dict, following_dict)
-    df["Followers_following"] = vec_followers_followings(df["Source"], df["Sink"], followers_dict, following_dict)
+    #df["Reciprocated"] = df.apply(lambda row: feature_extraction.reciprocated_follows(row["Source"], row["Sink"], followers_dict), axis=1)
+    #df["Same_Follows"] = df.apply(lambda row: feature_extraction.same_following(row["Source"], row["Sink"], following_dict), axis=1)
+    #df["Same_Followers"] = df.apply(lambda row: feature_extraction.same_followers(row["Source"], row["Sink"], followers_dict), axis=1)
+    #df["Following_followers"] = vec_following_followers(df["Source"], df["Sink"], followers_dict, following_dict)
+    #df["Followers_following"] = vec_followers_followings(df["Source"], df["Sink"], followers_dict, following_dict)
+    #df["#follower_Source"] = df.apply(lambda row: feature_extraction.dict_value_len(row["Source"],  followers_dict), axis=1)
+    #df["#following_Source"] = df.apply(lambda row: feature_extraction.dict_value_len(row["Source"],  following_dict), axis=1)
+    #df["#follower_Sink"] = df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], followers_dict), axis=1)
+    #df["#following_Sink"] = df.apply(lambda row: feature_extraction.dict_value_len(row["Sink"], following_dict), axis=1)
+
 
     return df
 
+def normalize_jac(jac,scale= 2.3):
+    jac_loc =np.log(np.round(jac,4) *10000)
+    jac_loc = jac_loc.replace([np.inf, -np.inf], 0)
+    df = jac_loc.to_frame()
+    df["1"] = 10
+    df.iloc[:,0] = df.iloc[:,0]*scale
+    res = df.min(axis=1)/10
+    return res
+
+
 def main ():
-    test_public_prediction = False
+    test_public_prediction = True
     start_time = time.time()
-    data_file = "data/generated-data.txt"
+    data_file = "data/generated-data-new-2.txt"
     following_file = "./data/train.txt"
     followers_file = "./data/followers.txt"
 
@@ -57,23 +72,26 @@ def main ():
         train_df, test_df = train_df.copy(), test_df.copy()
 
     print("Extracting features...")
-    train_df = extract_features(train_df,followers_dict, following_dict)
+    #train_df = extract_features(train_df,followers_dict, following_dict)
     test_df = extract_features(test_df,followers_dict, following_dict)
     print("Features extracted")
 
     # save features to file
     # feature_df = pd.concat([train_df, test_df])[['Label','Jacard_similarity']]
     feature_df = pd.concat([train_df, test_df])
-    feature_df.to_csv("features.csv")
+    feature_df.to_csv("features_gen_new.csv")
 
     ### Train model
     print("Training model...")
-    feature_cols = ["Jacard_similarity", "Reciprocated", "Same_Follows", "Same_Followers", "Followers_following","Following_followers"]
+    feature_cols = ["Jacard_similarity"]#, "Reciprocated", "Same_Follows", "Same_Followers", "Followers_following","Following_followers"]
+    
     features = train_df.loc[:, feature_cols]
     target = train_df.Label
+    
+    
 
-    model = XGBClassifier()
-    model.fit(features.values, target.values)
+    modelXGB = XGBClassifier()
+    modelXGB.fit(features.values, target.values)
     print("Model trained")
 
     logreg_model = LogisticRegression()
@@ -82,12 +100,13 @@ def main ():
 
     ### Test model
     test_features = test_df.loc[:, feature_cols]
-    predictions = model.predict(test_features.values)
+    predictions_XGB = modelXGB.predict(test_features.values)
     predictions_logreg = logreg_model.predict(test_features)
 
 
     # predictions_p = model.predict_proba(test_features.values)
     # predictions = predictions_p[:,1].tolist() # column 1 is the true prediction
+    predictions = normalize_jac(test_df["Jacard_similarity"])
 
     if test_public_prediction:
         helper.save_predictions_to_file(test_features, predictions)
